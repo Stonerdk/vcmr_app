@@ -12,6 +12,8 @@ import SwiftProtobuf
 struct MusicEmbeddingsData {
     let filenames: [String]
     let embeddings: [Float] // Flat array, size = numEmbeddings * 256
+    let artists: [String]
+    let tracks: [String]
 }
 
 func loadMusicEmbeddings() -> MusicEmbeddingsData? {
@@ -24,26 +26,18 @@ func loadMusicEmbeddings() -> MusicEmbeddingsData? {
         let data = try Data(contentsOf: url)
         let musicEmbeddingsProto = try MusicEmbeddings(serializedBytes: data)
         
-        var filenames: [String] = []
+        var filenames: [String] = musicEmbeddingsProto.filenames
+        var artists: [String] = musicEmbeddingsProto.artists
+        var tracks: [String] = musicEmbeddingsProto.tracks
         var embeddings: [Float] = []
         
         for embeddingMessage in musicEmbeddingsProto.embeddings {
-            filenames.append(embeddingMessage.filename)
             embeddings.append(contentsOf: embeddingMessage.embedding)
         }
         
-        return MusicEmbeddingsData(filenames: filenames, embeddings: embeddings)
+        return MusicEmbeddingsData(filenames: filenames, embeddings: embeddings, artists: artists, tracks: tracks)
     } catch {
         print("파일 읽기 또는 디코딩 에러: \(error)")
         return nil
     }
 }
-
-//
-//if let musicEmbeddings = loadMusicEmbeddings() {
-//    for embedding in musicEmbeddings {
-//        print("파일명: \(embedding.filename), 임베딩 길이: \(embedding.embedding.count)")
-//    }
-//} else {
-//    print("임베딩 데이터를 로드할 수 없습니다.")
-//}

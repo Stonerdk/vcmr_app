@@ -76,7 +76,7 @@ struct Heap<Element> {
     }
 }
 
-func computeTopKSimilarities(input: [Float], embeddingsData: MusicEmbeddingsData, topK: Int) -> [String]? {
+func computeTopKSimilarities(input: [Float], embeddingsData: MusicEmbeddingsData, topK: Int) -> [(String, String)]? {
     let embeddingDim = 256
     let numEmbeddings = embeddingsData.embeddings.count / embeddingDim
     
@@ -101,9 +101,9 @@ func computeTopKSimilarities(input: [Float], embeddingsData: MusicEmbeddingsData
         }
     }
     
-    var topKResults: [String] = []
+    var topKResults: [(String, String)] = []
     while let element = minHeap.remove() {
-        topKResults.append(embeddingsData.filenames[element.1])
+        topKResults.append((embeddingsData.tracks[element.1], embeddingsData.artists[element.1]))
     }
     
     topKResults.sort { $0 > $1 }

@@ -20,12 +20,10 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
   typealias Version = _2
 }
 
-struct MusicEmbedding: Sendable {
+struct Embeddings: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
-
-  var filename: String = String()
 
   var embedding: [Float] = []
 
@@ -39,7 +37,13 @@ struct MusicEmbeddings: Sendable {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var embeddings: [MusicEmbedding] = []
+  var filenames: [String] = []
+
+  var embeddings: [Embeddings] = []
+
+  var artists: [String] = []
+
+  var tracks: [String] = []
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -48,11 +52,10 @@ struct MusicEmbeddings: Sendable {
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-extension MusicEmbedding: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = "MusicEmbedding"
+extension Embeddings: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = "Embeddings"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "filename"),
-    2: .same(proto: "embedding"),
+    1: .same(proto: "embedding"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -61,25 +64,20 @@ extension MusicEmbedding: SwiftProtobuf.Message, SwiftProtobuf._MessageImplement
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self.filename) }()
-      case 2: try { try decoder.decodeRepeatedFloatField(value: &self.embedding) }()
+      case 1: try { try decoder.decodeRepeatedFloatField(value: &self.embedding) }()
       default: break
       }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if !self.filename.isEmpty {
-      try visitor.visitSingularStringField(value: self.filename, fieldNumber: 1)
-    }
     if !self.embedding.isEmpty {
-      try visitor.visitPackedFloatField(value: self.embedding, fieldNumber: 2)
+      try visitor.visitPackedFloatField(value: self.embedding, fieldNumber: 1)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: MusicEmbedding, rhs: MusicEmbedding) -> Bool {
-    if lhs.filename != rhs.filename {return false}
+  static func ==(lhs: Embeddings, rhs: Embeddings) -> Bool {
     if lhs.embedding != rhs.embedding {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -89,7 +87,10 @@ extension MusicEmbedding: SwiftProtobuf.Message, SwiftProtobuf._MessageImplement
 extension MusicEmbeddings: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = "MusicEmbeddings"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "embeddings"),
+    1: .same(proto: "filenames"),
+    2: .same(proto: "embeddings"),
+    3: .same(proto: "artists"),
+    4: .same(proto: "tracks"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -98,21 +99,36 @@ extension MusicEmbeddings: SwiftProtobuf.Message, SwiftProtobuf._MessageImplemen
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.embeddings) }()
+      case 1: try { try decoder.decodeRepeatedStringField(value: &self.filenames) }()
+      case 2: try { try decoder.decodeRepeatedMessageField(value: &self.embeddings) }()
+      case 3: try { try decoder.decodeRepeatedStringField(value: &self.artists) }()
+      case 4: try { try decoder.decodeRepeatedStringField(value: &self.tracks) }()
       default: break
       }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.filenames.isEmpty {
+      try visitor.visitRepeatedStringField(value: self.filenames, fieldNumber: 1)
+    }
     if !self.embeddings.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.embeddings, fieldNumber: 1)
+      try visitor.visitRepeatedMessageField(value: self.embeddings, fieldNumber: 2)
+    }
+    if !self.artists.isEmpty {
+      try visitor.visitRepeatedStringField(value: self.artists, fieldNumber: 3)
+    }
+    if !self.tracks.isEmpty {
+      try visitor.visitRepeatedStringField(value: self.tracks, fieldNumber: 4)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: MusicEmbeddings, rhs: MusicEmbeddings) -> Bool {
+    if lhs.filenames != rhs.filenames {return false}
     if lhs.embeddings != rhs.embeddings {return false}
+    if lhs.artists != rhs.artists {return false}
+    if lhs.tracks != rhs.tracks {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

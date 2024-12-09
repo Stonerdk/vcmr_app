@@ -36,10 +36,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         view.addSubview(imageView)
 
         NSLayoutConstraint.activate([
-            imageView.topAnchor.constraint(equalTo: view.centerYAnchor, constant: -300),
+            imageView.topAnchor.constraint(equalTo: view.centerYAnchor, constant: -500),
             imageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            imageView.widthAnchor.constraint(equalToConstant: 512),
-            imageView.heightAnchor.constraint(equalToConstant: 512)
+            imageView.widthAnchor.constraint(equalToConstant: 256),
+            imageView.heightAnchor.constraint(equalToConstant: 256)
         ])
 
     }
