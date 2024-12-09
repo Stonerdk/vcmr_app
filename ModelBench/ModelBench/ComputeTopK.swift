@@ -76,13 +76,13 @@ struct Heap<Element> {
     }
 }
 
-func computeTopKSimilarities(input: [Float], embeddingsData: MusicEmbeddingsData, topK: Int) -> [(String, String)]? {
+func computeTopKSimilarities(input: [Float], embeddingsData: MusicEmbeddingsData, topK: Int) -> [MusicInfo] {
     let embeddingDim = 256
     let numEmbeddings = embeddingsData.embeddings.count / embeddingDim
     
     guard input.count == embeddingDim else {
         print("입력 벡터의 차원이 올바르지 않습니다.")
-        return nil
+        return []
     }
     
     var similarities = [Float](repeating: 0, count: numEmbeddings)
@@ -101,12 +101,10 @@ func computeTopKSimilarities(input: [Float], embeddingsData: MusicEmbeddingsData
         }
     }
     
-    var topKResults: [(String, String)] = []
+    var topKResults: [MusicInfo] = []
     while let element = minHeap.remove() {
-        topKResults.append((embeddingsData.tracks[element.1], embeddingsData.artists[element.1]))
+        topKResults.append(MusicInfo(title: embeddingsData.tracks[element.1], artist: embeddingsData.artists[element.1], score: element.0))
     }
-    
-    topKResults.sort { $0 > $1 }
     
     return topKResults
 }

@@ -5,15 +5,16 @@ import UIKit
 
 @available(iOS 16.0, *)
 class Benchmark {
-    var inferencesPerRound: Int = 50
-    let warmUps: Int = 1
+    var inferencesPerRound: Int = 1
+    let warmUps: Int = 0
     
     lazy var modelImageEncoder: ImageEncoder_float32 = try! ImageEncoder_float32(configuration: MLModelConfiguration())
     lazy var modelMLP: MLP_transformer = try! MLP_transformer(configuration: MLModelConfiguration())
     lazy var musicEmbeddings: MusicEmbeddingsData! = loadMusicEmbeddings()
     
-    func runAndShowBenchmark(viewController: ViewController, runButton: UIButton, image:UIImage) {
+    func runAndShowBenchmark(viewController: ViewController, runButton: UIButton, image:UIImage, completion: @escaping ([MusicInfo]) -> Void){
         inferenceQueue.async {[self] in
+            var topKResults: [MusicInfo] = []
             var imageProcessingTime: Double = 0.0
             var clipEncodingTime: Double = 0.0
             var mlpInferenceTime: Double = 0.0
@@ -40,11 +41,10 @@ class Benchmark {
                 
                 let phase3 = Date()
                 let mlp_output_f32 = convertMLMultiArrayToFloatArray(mlp_output!.output)
-                let topKResults = computeTopKSimilarities(input:mlp_output_f32, embeddingsData:self.musicEmbeddings, topK:10);
+                topKResults = computeTopKSimilarities(input:mlp_output_f32, embeddingsData:self.musicEmbeddings, topK:10);
                 
                 let phase4 = Date()
                 print("Computation Done...");
-                
                 print(topKResults);
                 
                 if inference < 0 { // warmup
@@ -63,6 +63,7 @@ class Benchmark {
             print(imageProcessingTime, clipEncodingTime, mlpInferenceTime, topKTime)
             DispatchQueue.main.async {
                 runButton.isEnabled = true
+                completion(topKResults)
             }
         }
     }

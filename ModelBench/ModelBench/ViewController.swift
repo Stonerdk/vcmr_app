@@ -18,29 +18,16 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     // menu data source
     var settingMenuViewDataSource: [(String, Int, Int)]!
     var settingMenuView = UITableView()
+    var musicList: [MusicInfo] = []
     lazy var benchmark: Benchmark = Benchmark()
     
-    let imageView: UIImageView = {
-        let iv = UIImageView()
-        iv.contentMode = .scaleAspectFit
-        iv.translatesAutoresizingMaskIntoConstraints = false
-        return iv
-    }()
-    
     @IBOutlet weak var runButton: UIButton!
-
+    @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var musicStackView: UIStackView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.runButton.isEnabled = true
-        
-        view.addSubview(imageView)
-
-        NSLayoutConstraint.activate([
-            imageView.topAnchor.constraint(equalTo: view.centerYAnchor, constant: -500),
-            imageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            imageView.widthAnchor.constraint(equalToConstant: 256),
-            imageView.heightAnchor.constraint(equalToConstant: 256)
-        ])
 
     }
 
@@ -61,10 +48,30 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 DispatchQueue.main.async {
                     if let selectedImage = image as? UIImage {
                         self?.imageView.image = selectedImage // Display the image (optional)
-                        self?.benchmark.runAndShowBenchmark(viewController:self!, runButton:self!.runButton, image: selectedImage)
+                        self?.benchmark.runAndShowBenchmark(viewController:self!, runButton:self!.runButton, image: selectedImage) { [weak self] topKTracks in
+                            self?.musicList = topKTracks
+                            self?.populateMusicStackView()
+                            self?.runButton.isEnabled = true
+                        }
                     }
                 }
             }
+        }
+    }
+    
+    func populateMusicStackView() {
+        for view in musicStackView.arrangedSubviews {
+            musicStackView.removeArrangedSubview(view)
+            view.removeFromSuperview()
+        }
+        
+        for track in musicList {
+            let trackView = MusicTrackView()
+            trackView.configure(with: track)
+            musicStackView.addArrangedSubview(trackView)
+            NSLayoutConstraint.activate([
+                trackView.heightAnchor.constraint(equalToConstant: 60)
+            ])
         }
     }
 
