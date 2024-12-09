@@ -11,9 +11,8 @@ import UIKit
 import CoreVideo
 
 
-func preprocessImageForEncoder() -> CVPixelBuffer? {
-    let dummyImage = UIImage(systemName: "photo")!  // 실제 이미지를 사용하는 대신 샘플 이미지 사용
-    guard let resizedImage = resizeImageTo256x256(image: dummyImage) else {
+func preprocessImageForEncoder(image: UIImage) -> CVPixelBuffer? {
+    guard let resizedImage = resizeImageTo256x256(image: image) else {
         return nil
     }
     return convertToPixelBuffer(from: resizedImage)

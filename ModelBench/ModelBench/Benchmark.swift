@@ -12,7 +12,7 @@ class Benchmark {
     lazy var modelMLP: MLP_transformer = try! MLP_transformer(configuration: MLModelConfiguration())
     lazy var musicEmbeddings: MusicEmbeddingsData! = loadMusicEmbeddings()
     
-    func runAndShowBenchmark(viewController: ViewController, runButton: UIButton) {
+    func runAndShowBenchmark(viewController: ViewController, runButton: UIButton, image:UIImage) {
         inferenceQueue.async {[self] in
             var imageProcessingTime: Double = 0.0
             var clipEncodingTime: Double = 0.0
@@ -21,7 +21,7 @@ class Benchmark {
             
             for inference in -self.warmUps..<self.inferencesPerRound {
                 let phase0 = Date()
-                guard let new_pixel = preprocessImageForEncoder() else {
+                guard let new_pixel = preprocessImageForEncoder(image: image) else {
                     fatalError("Could not preprocess image to 256x256 CVPixelBuffer")
                 }
                 let new_input = ImageEncoder_float32Input(colorImage: new_pixel)

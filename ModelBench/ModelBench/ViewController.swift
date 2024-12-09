@@ -9,26 +9,63 @@
 
 import UIKit
 import CoreML
+import PhotosUI
 
 let inferenceQueue = DispatchQueue(label: "inferenceQueue")
 
 @available(iOS 16.0, *)
-class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
+class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, PHPickerViewControllerDelegate {
     // menu data source
     var settingMenuViewDataSource: [(String, Int, Int)]!
     var settingMenuView = UITableView()
     lazy var benchmark: Benchmark = Benchmark()
+    
+    let imageView: UIImageView = {
+        let iv = UIImageView()
+        iv.contentMode = .scaleAspectFit
+        iv.translatesAutoresizingMaskIntoConstraints = false
+        return iv
+    }()
     
     @IBOutlet weak var runButton: UIButton!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.runButton.isEnabled = true
+        
+        view.addSubview(imageView)
+
+        NSLayoutConstraint.activate([
+            imageView.topAnchor.constraint(equalTo: view.centerYAnchor, constant: -300),
+            imageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            imageView.widthAnchor.constraint(equalToConstant: 512),
+            imageView.heightAnchor.constraint(equalToConstant: 512)
+        ])
+
     }
 
     @IBAction func RunButtonClicked(_ sender: Any) {
         self.runButton.isEnabled = false
-        benchmark.runAndShowBenchmark(viewController:self, runButton:self.runButton)
+        var config = PHPickerConfiguration()
+        config.selectionLimit = 1
+        let picker = PHPickerViewController(configuration: config)
+        picker.delegate = self
+        present(picker, animated: true, completion: nil)
+    }
+    
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        picker.dismiss(animated: true, completion: nil)
+        guard let provider = results.first?.itemProvider else { return }
+        if provider.canLoadObject(ofClass: UIImage.self) {
+            provider.loadObject(ofClass: UIImage.self) { [weak self] image, error in
+                DispatchQueue.main.async {
+                    if let selectedImage = image as? UIImage {
+                        self?.imageView.image = selectedImage // Display the image (optional)
+                        self?.benchmark.runAndShowBenchmark(viewController:self!, runButton:self!.runButton, image: selectedImage)
+                    }
+                }
+            }
+        }
     }
 
     @IBAction func settingButtonTouched(_ sender: Any) {
