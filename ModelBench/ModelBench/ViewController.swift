@@ -35,53 +35,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         print("settingButtonTouched")
         settingMenuView.isHidden = !settingMenuView.isHidden
     }
-    
-    func preprocessImageForEncoder() -> CVPixelBuffer? {
-        let dummyImage = UIImage(systemName: "photo")!  // 실제 이미지를 사용하는 대신 샘플 이미지 사용
-        let resizedImage = resizeImageTo256x256(image: dummyImage)
-        return convertToPixelBuffer(from: resizedImage!)
-    }
-
-    func resizeImageTo256x256(image: UIImage) -> UIImage? {
-        let size = CGSize(width: 256, height: 256)
-        UIGraphicsBeginImageContextWithOptions(size, false, 1.0)
-        image.draw(in: CGRect(origin: .zero, size: size))
-        let resizedImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        return resizedImage
-    }
-
-    func convertToPixelBuffer(from image: UIImage) -> CVPixelBuffer? {
-        let width = 256
-        let height = 256
-        var pixelBuffer: CVPixelBuffer?
-        let attrs = [
-            kCVPixelBufferCGImageCompatibilityKey: true,
-            kCVPixelBufferCGBitmapContextCompatibilityKey: true
-        ] as CFDictionary
-        let status = CVPixelBufferCreate(kCFAllocatorDefault, width, height,
-                                         kCVPixelFormatType_32BGRA, attrs, &pixelBuffer)
-        guard status == kCVReturnSuccess, let buffer = pixelBuffer else {
-            return nil
-        }
-        
-        CVPixelBufferLockBaseAddress(buffer, .readOnly)
-        let pixelData = CVPixelBufferGetBaseAddress(buffer)
-        
-        let colorSpace = CGColorSpaceCreateDeviceRGB()
-        let context = CGContext(data: pixelData, width: width, height: height,
-                                bitsPerComponent: 8, bytesPerRow: CVPixelBufferGetBytesPerRow(buffer),
-                                space: colorSpace, bitmapInfo: CGImageAlphaInfo.premultipliedFirst.rawValue)
-        
-        if let context = context, let cgImage = image.cgImage {
-            context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
-        }
-        CVPixelBufferUnlockBaseAddress(buffer, .readOnly)
-        return buffer
-    }
-
-
-    // Main function to perform a benchmark session
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
