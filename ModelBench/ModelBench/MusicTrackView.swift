@@ -19,7 +19,7 @@ class MusicTrackView: UIView {
     
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.boldSystemFont(ofSize: 18)
+        label.font = UIFont.boldSystemFont(ofSize: 14)
         label.textColor = .black
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -27,7 +27,7 @@ class MusicTrackView: UIView {
     
     let artistLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 14)
+        label.font = UIFont.systemFont(ofSize: 12)
         label.textColor = .black
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -45,7 +45,7 @@ class MusicTrackView: UIView {
     }
     
     private func setupViews() {
-        self.backgroundColor = UIColor(white: 0.95, alpha: 0.6)
+        self.backgroundColor = UIColor(white: 0.95, alpha: 0.4)
         self.layer.cornerRadius = 8
         self.layer.masksToBounds = true
         self.translatesAutoresizingMaskIntoConstraints = false
@@ -60,15 +60,17 @@ class MusicTrackView: UIView {
             blurEffectView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
             blurEffectView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
 
-            titleLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 8),
+            titleLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 6),
             titleLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 12),
-            titleLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -12),
+            titleLabel.trailingAnchor.constraint(equalTo: self.leadingAnchor, constant: 300),
         
-            artistLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
-            artistLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 12),
+            artistLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 6),
+            artistLabel.leadingAnchor.constraint(equalTo: self.trailingAnchor, constant: -100),
             artistLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -12),
-            artistLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -8)
+//            artistLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -8)
         ])
+        
+        self.heightAnchor.constraint(equalToConstant: 30).isActive = true
 
     }
     

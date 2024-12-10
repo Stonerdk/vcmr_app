@@ -5,11 +5,12 @@ import UIKit
 
 @available(iOS 16.0, *)
 class Benchmark {
-    var inferencesPerRound: Int = 1
-    let warmUps: Int = 0
+    var inferencesPerRound: Int = 50
+    let warmUps: Int = 1
     
-    lazy var modelImageEncoder: ImageEncoder_float32 = try! ImageEncoder_float32(configuration: MLModelConfiguration())
+    // lazy var modelImageEncoder: ImageEncoder_float32 = try! ImageEncoder_float32(configuration: MLModelConfiguration())
     lazy var modelMLP: MLP_transformer = try! MLP_transformer(configuration: MLModelConfiguration())
+    lazy var mobileClip: ImageEncoder_float32 = try! ImageEncoder_float32(configuration: MLModelConfiguration())
     lazy var musicEmbeddings: MusicEmbeddingsData! = loadMusicEmbeddings()
     
     func runAndShowBenchmark(viewController: ViewController, runButton: UIButton, image:UIImage, completion: @escaping ([MusicInfo]) -> Void){
@@ -23,16 +24,15 @@ class Benchmark {
             for inference in -self.warmUps..<self.inferencesPerRound {
                 let phase0 = Date()
                 guard let new_pixel = preprocessImageForEncoder(image: image) else {
-                    fatalError("Could not preprocess image to 256x256 CVPixelBuffer")
+                    fatalError("Could not preprocess image to 224x224 CVPixelBuffer")
                 }
                 let new_input = ImageEncoder_float32Input(colorImage: new_pixel)
-                
                 let phase1 = Date()
-                let encoder_output = try? self.modelImageEncoder.prediction(input:new_input)
+                let encoder_output = try? self.mobileClip.prediction(input:new_input)
                 if encoder_output == nil {
                     fatalError("An error occured while inferencing CLIP ImageEncoder.")
                 }
-                
+
                 let phase2 = Date()
                 let mlp_output = try? self.modelMLP.prediction(input:encoder_output!.embOutput)
                 if mlp_output == nil {
@@ -41,7 +41,7 @@ class Benchmark {
                 
                 let phase3 = Date()
                 let mlp_output_f32 = convertMLMultiArrayToFloatArray(mlp_output!.output)
-                topKResults = computeTopKSimilarities(input:mlp_output_f32, embeddingsData:self.musicEmbeddings, topK:10);
+                topKResults = computeTopKSimilarities(input:mlp_output_f32, embeddingsData:self.musicEmbeddings, topK:5);
                 
                 let phase4 = Date()
                 print("Computation Done...");
